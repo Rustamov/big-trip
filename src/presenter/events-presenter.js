@@ -7,24 +7,29 @@ import EventNewView from '../view/event-new-view.js';
 import EventEditView from '../view/event-edit-view.js';
 
 export default class EventsPresenter {
-  // boardComponent = new BoardView();
   eventsListComponent = new EventsListView();
 
-  constructor({eventsContainer}) {
+  constructor({eventsContainer, eventsModel, offersModel}) {
     this.eventsContainer = eventsContainer;
+    this.eventsModel = eventsModel;
+    this.offersModel = offersModel;
   }
 
   init() {
-    // render(this.boardComponent, this.eventsContainer);
+    this.events = [...this.eventsModel.getEvents()];
+
     render(new SortView(), this.eventsContainer);
     render(this.eventsListComponent, this.eventsContainer);
-    // render(new EventNewView(), this.eventsListComponent.getElement());
-    render(new EventEditView(), this.eventsListComponent.getElement());
+    // render(new EventEditView(), this.eventsListComponent.getElement());
 
-    for (let i = 0; i < 3; i++) {
-      render(new EventView(), this.eventsListComponent.getElement());
+    for (let i = 0; i < this.events.length; i++) {
+      render(
+        new EventView({
+          event: this.events[i],
+          offers: this.offersModel.getOffersByType(this.events[i].type)
+        }),
+        this.eventsListComponent.getElement()
+      );
     }
-
-    // render(new LoadMoreButtonView(), this.boardComponent.getElement());
   }
 }
