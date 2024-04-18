@@ -1,11 +1,12 @@
 export default class EventsModel {
+  #events = [];
 
   constructor(events) {
-    this.events = events.map(this.#adaptToClient);
+    this.#events = events.map(this.#adaptToClient);
   }
 
-  getEvents() {
-    return this.events;
+  get events() {
+    return this.#events;
   }
 
   #adaptToClient(event) {

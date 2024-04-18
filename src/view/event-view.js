@@ -91,24 +91,28 @@ function createEventPointTemplate(event, offers) {
 }
 
 export default class EventPointView {
+  #element = null;
+  #event = {};
+  #offers = [];
+
   constructor({ event, offers }) {
-    this.offers = offers;
-    this.event = event;
+    this.#event = event;
+    this.#offers = offers;
   }
 
-  getTemplate() {
-    return createEventPointTemplate(this.event, this.offers);
+  get template() {
+    return createEventPointTemplate(this.#event, this.#offers);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

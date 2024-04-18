@@ -17,19 +17,21 @@ function createInfoTemplate() {
 }
 
 export default class InfoView {
-  getTemplate() {
+  #element = null;
+
+  get template() {
     return createInfoTemplate();
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
