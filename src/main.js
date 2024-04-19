@@ -6,7 +6,7 @@ import OffersModel from './model/offers-model.js';
 import FilterView from './view/filter-view.js';
 import InfoView from './view/info-view.js';
 
-import {render} from './render.js';
+import { render } from './framework/render.js';
 import EventsPresenter from './presenter/events-presenter.js';
 
 import { getData } from './api.js';

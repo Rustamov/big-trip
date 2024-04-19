@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createEventEditTemplate() {
   return (
@@ -160,22 +160,8 @@ function createEventEditTemplate() {
   );
 }
 
-export default class EventEditView {
-  #element = null;
-
+export default class EventEditView extends AbstractView {
   get template() {
     return createEventEditTemplate();
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
