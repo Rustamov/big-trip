@@ -161,7 +161,27 @@ function createEventEditTemplate() {
 }
 
 export default class EventEditView extends AbstractView {
+  #event = {};
+  #offers = [];
+
+  #handleFormSubmit = null;
+
+  constructor({event, offers, onFormSubmit}) {
+    super();
+    this.#event = event;
+    this.#offers = offers;
+    this.#handleFormSubmit = onFormSubmit;
+
+    this.element.querySelector('form.event')
+      .addEventListener('submit', this.#onFormSubmit);
+  }
+
   get template() {
     return createEventEditTemplate();
   }
+
+  #onFormSubmit = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 }

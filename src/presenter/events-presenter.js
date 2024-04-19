@@ -51,10 +51,23 @@ export default class EventsPresenter {
   };
 
   #renderEvent = (event, offers) => {
-    const eventParams = { event, offers };
+    const eventComponent = new EventView({
+      event,
+      offers,
+      onEditClick: () => {
+        replaceEventToForm();
+        document.addEventListener('keydown', onEscKeyDown);
+      }
+    });
 
-    const eventComponent = new EventView(eventParams);
-    const eventEditComponent = new EventEditView(eventParams);
+    const eventEditComponent = new EventEditView({
+      event,
+      offers,
+      onFormSubmit: () => {
+        replaceFormToEvent();
+        document.removeEventListener('keydown', onEscKeyDown);
+      }
+    });
 
     const replaceEventToForm = () => {
       this.#eventsListComponent.element.replaceChild(eventEditComponent.element, eventComponent.element);
@@ -72,16 +85,7 @@ export default class EventsPresenter {
       }
     };
 
-    eventComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replaceEventToForm();
-      document.addEventListener('keydown', onEscKeyDown);
-    });
 
-    eventEditComponent.element.querySelector('form.event').addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      replaceFormToEvent();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
 
     render(
       eventComponent,
