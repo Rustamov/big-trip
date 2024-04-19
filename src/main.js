@@ -1,4 +1,4 @@
-import { showAlert } from './util.js';
+import { showAlert } from './utils/common.js';
 
 import EventsModel from './model/events-model.js';
 import OffersModel from './model/offers-model.js';
