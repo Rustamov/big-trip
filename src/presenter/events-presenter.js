@@ -37,10 +37,11 @@ export default class EventsPresenter {
       render(new SortView(), this.#eventsContainer);
       render(this.#eventsListComponent, this.#eventsContainer);
 
+      console.log(this.#offers);
+
       for (let i = 0; i < this.#events.length; i++) {
         const eventOffers = this.#offers
-          .filter((offer) => offer.type === this.#events[i].type)
-          [0]
+          .find((offer) => offer.type === this.#events[i].type)
           .offers;
 
         this.#renderEvent(this.#events[i], eventOffers);

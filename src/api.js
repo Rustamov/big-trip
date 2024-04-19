@@ -1,4 +1,4 @@
-const AUTHORIZATION = 'Basic hS2sfS44wcl1sa2j';
+const AUTHORIZATION = 'Basic hS2sfsdfvfgfS44wcl1sa2j131331111';
 const END_POINT = 'https://17.ecmascript.htmlacademy.pro/big-trip/';
 
 const headers = { 'Authorization': AUTHORIZATION }; // auth header with bearer token
