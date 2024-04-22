@@ -1,13 +1,20 @@
 import { render } from '../framework/render.js';
+import { SortType } from '../const.js';
+import {
+  sortEventsByDay,
+  sortEventsByEvent,
+  sortEventsByTime,
+  sortEventsByPrice,
+  sortEventsByOffers,
+} from '../utils/event.js';
 
 import SortView from '../view/sort-view.js';
 import EventsListView from '../view/events-list.js';
 import EventsEmptyView from '../view/events-empty.js';
-import {updateItem} from '../utils/common.js';
+import { updateItem } from '../utils/common.js';
 
 import EventPresenter from '../presenter/event-presenter.js';
 
-import { SortType } from '../const.js';
 
 
 export default class EventsPresenter {
@@ -22,7 +29,7 @@ export default class EventsPresenter {
   #sourcedEvents = [];
   #eventPresenters = new Map();
   #offers = [];
-  #currentSortType = SortType.DEFAULT;
+  #currentSortType = SortType.DAY;
 
 
   constructor({ eventsContainer, eventsModel, offersModel }) {
@@ -43,13 +50,22 @@ export default class EventsPresenter {
 
   #sortTasks(sortType) {
     switch (sortType) {
-      case SortType.DATE_UP:
-        this.#events.sort(sortTaskUp);
+      case SortType.DAY:
+        this.#events.sort(sortEventsByDay);
         break;
-      case SortType.DATE_DOWN:
-        this.#events.sort(sortTaskDown);
+      // case SortType.EVENT:
+      //   this.#events.sort(sortEventsByEvent);
+      //   break;
+      case SortType.TIME:
+        this.#events.sort(sortEventsByTime);
         break;
-      default:
+      case SortType.PRICE:
+        this.#events.sort(sortEventsByPrice);
+        break;
+      // case SortType.OFFERS:
+      //   this.#events.sort(sortEventsByOffers);
+      //   break;
+      // default:
         this.#events = [...this.#sourcedEvents];
     }
 
@@ -57,13 +73,14 @@ export default class EventsPresenter {
   }
 
   #handleSortTypeChange = (sortType) => {
-    // if (this.#currentSortType === sortType) {
-    //   return;
-    // }
+    console.log(sortType);
+    if (this.#currentSortType === sortType) {
+      return;
+    }
 
-    // this.#sortTasks(sortType);
-    // this.#clearEventsList();
-    // this.#renderEventsList();
+    this.#sortTasks(sortType);
+    this.#clearEventsList();
+    this.#renderEventsList();
   };
 
   #renderSort() {

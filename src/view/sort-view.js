@@ -32,7 +32,22 @@ function createSortTemplate() {
 }
 
 export default class SortView extends AbstractView {
+  #handleSortTypeChange = null;
+
+  constructor({ onSortTypeChange }) {
+    super();
+    this.#handleSortTypeChange = onSortTypeChange;
+
+    this.element.addEventListener('change', this.#onTypeChange);
+  }
+
   get template() {
     return createSortTemplate();
   }
+
+  #onTypeChange = (evt) => {
+    evt.preventDefault();
+    const sortType = this.element.querySelector('.trip-sort__input:checked').value;
+    this.#handleSortTypeChange(sortType);
+  };
 }

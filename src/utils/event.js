@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-// var duration = require('dayjs/plugin/duration')
 dayjs.extend(duration);
 
 const DATE_FORMAT = 'MMM D';
@@ -30,9 +29,64 @@ function eventDatesDiff(dateFrom, dateTo) {
   return dateStr.trim();
 }
 
+function getWeightForNullDate(dateA, dateB) {
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
+
+  if (dateA === null) {
+    return 1;
+  }
+
+  if (dateB === null) {
+    return -1;
+  }
+
+  return null;
+}
+
+function sortEventsByDay(eventA, eventB) {
+  const weight = getWeightForNullDate(eventA.dateFrom, eventB.dateFrom);
+
+  return weight ?? dayjs(eventA.dateFrom).diff(dayjs(eventB.dateFrom));
+}
+
+// function sortEventsByEvent(eventA, eventB) {
+//   const weight = getWeightForNullDate(eventA.dateFrom, eventB.dateFrom);
+
+//   return weight ?? dayjs(eventB.dateFrom).diff(dayjs(eventA.dateFrom));
+// }
+
+function sortEventsByTime(eventA, eventB) {
+  const weight = getWeightForNullDate(eventA.dateFrom, eventB.dateFrom);
+
+  if (weight !== null) {
+    return weight;
+  }
+
+  const datesDiffA = dayjs(eventA.dateTo).diff(dayjs(eventA.dateFrom));
+  const datesDiffB = dayjs(eventB.dateTo).diff(dayjs(eventB.dateFrom));
+
+
+  return weight ?? datesDiffB - datesDiffA;
+}
+
+function sortEventsByPrice(eventA, eventB) {
+  const weight = getWeightForNullDate(eventA.basePrice, eventB.dateFrom);
+
+  return weight ?? eventB.basePrice - eventA.basePrice;
+}
+
+// function sortEventsByOffers(eventA, eventB) {
+
+// }
+
 
 export {
   humanizeEventDate,
   humanizeEventDateHours,
   eventDatesDiff,
+  sortEventsByDay,
+  sortEventsByTime,
+  sortEventsByPrice,
 };
