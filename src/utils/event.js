@@ -31,10 +31,6 @@ function eventDatesDiff(dateFrom, dateTo) {
 }
 
 
-
-
-
-
 export {
   humanizeEventDate,
   humanizeEventDateHours,

@@ -20,14 +20,9 @@ function createOffresTemplate(offersIdList, offers) {
     </ul>`
 
   );
-
-
 }
 
 function createEventPointTemplate(event, offers) {
-
-  console.log(offers);
-
   const {
     basePrice,
     dateFrom = null,
@@ -90,14 +85,14 @@ function createEventPointTemplate(event, offers) {
   );
 }
 
-export default class EventPointView extends AbstractView {
+export default class EventView extends AbstractView {
   #event = {};
   #offers = [];
 
   #handleEditClick = null;
 
   constructor({ event, offers, onEditClick }) {
-    super()
+    super();
     this.#event = event;
     this.#offers = offers;
     this.#handleEditClick = onEditClick;

@@ -1,21 +1,28 @@
 import { render } from '../framework/render.js';
 
 import SortView from '../view/sort-view.js';
-import EventView from '../view/event-view.js';
 import EventsListView from '../view/events-list.js';
 import EventsEmptyView from '../view/events-empty.js';
-import EventNewView from '../view/event-new-view.js';
-import EventEditView from '../view/event-edit-view.js';
+
+import EventPresenter from '../presenter/event-presenter.js';
+
+import { SortType } from '../const.js';
+
 
 export default class EventsPresenter {
-  #events = [];
-  #offers = [];
-
   #eventsContainer = null;
   #eventsModel = null;
   #offersModel = null;
 
+  #sortComponent = null;
   #eventsListComponent = new EventsListView();
+
+  #events = [];
+  #sourcedEvents = [];
+  #eventPresenters = new Map();
+  #offers = [];
+  #currentSortType = SortType.DEFAULT;
+
 
   constructor({ eventsContainer, eventsModel, offersModel }) {
     this.#eventsContainer = eventsContainer;
@@ -27,71 +34,90 @@ export default class EventsPresenter {
     this.#events = [...this.#eventsModel.events];
     this.#offers = [...this.#offersModel.offers];
 
+    this.#sourcedEvents = [...this.#eventsModel.events];
+
     this.#renderEvents();
   }
 
-  #renderEvents = () => {
-    if (this.#events.length === 0) {
-      render(new EventsEmptyView(), this.#eventsContainer);
-    } else {
-      render(new SortView(), this.#eventsContainer);
-      render(this.#eventsListComponent, this.#eventsContainer);
 
-      console.log(this.#offers);
-
-      for (let i = 0; i < this.#events.length; i++) {
-        const eventOffers = this.#offers
-          .find((offer) => offer.type === this.#events[i].type)
-          .offers;
-
-        this.#renderEvent(this.#events[i], eventOffers);
-      }
+  #sortTasks(sortType) {
+    switch (sortType) {
+      case SortType.DATE_UP:
+        this.#events.sort(sortTaskUp);
+        break;
+      case SortType.DATE_DOWN:
+        this.#events.sort(sortTaskDown);
+        break;
+      default:
+        this.#events = [...this.#sourcedEvents];
     }
 
+    this.#currentSortType = sortType;
+  }
+
+  #handleSortTypeChange = (sortType) => {
+    // if (this.#currentSortType === sortType) {
+    //   return;
+    // }
+
+    // this.#sortTasks(sortType);
+    // this.#clearEventsList();
+    // this.#renderEventsList();
   };
+
+  #renderSort() {
+    this.#sortComponent = new SortView({
+      onSortTypeChange: this.#handleSortTypeChange
+    });
+
+
+    render(this.#sortComponent, this.#eventsContainer);
+  }
 
   #renderEvent = (event, offers) => {
-    const eventComponent = new EventView({
-      event,
-      offers,
-      onEditClick: () => {
-        replaceEventToForm();
-        document.addEventListener('keydown', onEscKeyDown);
-      }
+    const eventPresenter = new EventPresenter({
+      eventsListContainer: this.#eventsListComponent.element,
+      onDataChange: this.#handleEventChange,
+      onModeChange: this.#handleModeChange
     });
 
-    const eventEditComponent = new EventEditView({
-      event,
-      offers,
-      onFormSubmit: () => {
-        replaceFormToEvent();
-        document.removeEventListener('keydown', onEscKeyDown);
-      }
-    });
+    eventPresenter.init(event, offers);
 
-    const replaceEventToForm = () => {
-      this.#eventsListComponent.element.replaceChild(eventEditComponent.element, eventComponent.element);
-    };
-
-    const replaceFormToEvent = () => {
-      this.#eventsListComponent.element.replaceChild(eventComponent.element, eventEditComponent.element);
-    };
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        evt.preventDefault();
-        replaceFormToEvent();
-        document.removeEventListener('keydown', onEscKeyDown);
-      }
-    };
-
-
-
-    render(
-      eventComponent,
-      this.#eventsListComponent.element
-    );
-
+    this.#eventPresenters.set(event.id, eventPresenter);
 
   };
+
+  #renderEventsList() {
+    render(this.#eventsListComponent, this.#eventsContainer);
+
+    for (let i = 0; i < this.#events.length; i++) {
+      const eventOffers = this.#offers
+        .find((offer) => offer.type === this.#events[i].type)
+        .offers;
+
+      this.#renderEvent(this.#events[i], eventOffers);
+    }
+  }
+
+
+  #renderEvents() {
+    this.#renderSort();
+    this.#renderEventsList();
+  }
+
+  #clearEventsList() {
+    this.#eventPresenters.forEach((presenter) => presenter.destroy());
+    this.#eventPresenters.clear();
+  }
+
+  #handleModeChange = () => {
+    // this.#eventPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #handleEventChange = (updatedEvent) => {
+    // this.#events = updateItem(this.#events, updatedEvent);
+    // this.#sourcedEvents = updateItem(this.#sourcedEvents, updatedEvent);
+    // this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+  };
+
 }
