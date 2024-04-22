@@ -36,17 +36,14 @@ export default class EventPresenter {
     this.#eventComponent = new EventView({
       event,
       offers,
-      onEditClick: () => {
-        this.#replaceEventToForm();
-      }
+      onEditClick: this.#handleEditClick,
+      onFavoriteClick: this.#handleFavoriteClick,
     });
 
     this.#eventEditComponent = new EventEditView({
-      event,
-      offers,
-      onFormSubmit: () => {
-        this.#replaceFormToEvent();
-      }
+      event: this.#event,
+      offers: this.#offers,
+      onFormSubmit: this.#handleFormSubmit,
     });
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
@@ -66,22 +63,50 @@ export default class EventPresenter {
     remove(prevEventEditComponent);
   }
 
+  destroy() {
+    remove(this.#eventComponent);
+    remove(this.#eventEditComponent);
+  }
+
+  resetView() {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceFormToEvent();
+    }
+  }
+
   #replaceEventToForm = () => {
     replace(this.#eventEditComponent, this.#eventComponent);
     this.#handleModeChange();
     this.#mode = Mode.EDITING;
+    document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
   #replaceFormToEvent = () => {
     replace(this.#eventComponent, this.#eventEditComponent);
-    document.addEventListener('keydown', this.#escKeyDownHandler);
     this.#mode = Mode.DEFAULT;
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+  };
+
+  #handleEditClick = () => {
+    this.#replaceEventToForm();
+  };
+
+  #handleFormSubmit = (event) => {
+    this.#handleDataChange(event);
+    this.#replaceFormToEvent();
+  };
+
+  #handleFavoriteClick = () => {
+    this.#handleDataChange(
+      {...this.#event, isFavorite: !this.#event.isFavorite},
+      this.#offers
+    );
   };
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      replaceFormToEvent();
+      this.#replaceFormToEvent();
       document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
   };

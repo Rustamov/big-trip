@@ -3,6 +3,7 @@ import { render } from '../framework/render.js';
 import SortView from '../view/sort-view.js';
 import EventsListView from '../view/events-list.js';
 import EventsEmptyView from '../view/events-empty.js';
+import {updateItem} from '../utils/common.js';
 
 import EventPresenter from '../presenter/event-presenter.js';
 
@@ -70,7 +71,6 @@ export default class EventsPresenter {
       onSortTypeChange: this.#handleSortTypeChange
     });
 
-
     render(this.#sortComponent, this.#eventsContainer);
   }
 
@@ -84,7 +84,6 @@ export default class EventsPresenter {
     eventPresenter.init(event, offers);
 
     this.#eventPresenters.set(event.id, eventPresenter);
-
   };
 
   #renderEventsList() {
@@ -99,25 +98,26 @@ export default class EventsPresenter {
     }
   }
 
+  #clearEventsList() {
+    this.#eventPresenters.forEach((presenter) => presenter.destroy());
+    this.#eventPresenters.clear();
+  }
 
   #renderEvents() {
     this.#renderSort();
     this.#renderEventsList();
   }
 
-  #clearEventsList() {
-    this.#eventPresenters.forEach((presenter) => presenter.destroy());
-    this.#eventPresenters.clear();
-  }
+
 
   #handleModeChange = () => {
-    // this.#eventPresenters.forEach((presenter) => presenter.resetView());
+    this.#eventPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #handleEventChange = (updatedEvent) => {
-    // this.#events = updateItem(this.#events, updatedEvent);
-    // this.#sourcedEvents = updateItem(this.#sourcedEvents, updatedEvent);
-    // this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+  #handleEventChange = (updatedEvent, offers) => {
+    this.#events = updateItem(this.#events, updatedEvent);
+    this.#sourcedEvents = updateItem(this.#sourcedEvents, updatedEvent);
+    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent, offers);
   };
 
 }

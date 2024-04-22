@@ -118,6 +118,10 @@ const getClickedChildWithClass = (parent, clickedNode, childElementClass) => {
   return needNode !== parent ? needNode : false;
 };
 
+function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}
+
 export {
   getRandomPositiveInteger,
   getRandomElementsFromArray,
@@ -129,4 +133,5 @@ export {
   debounce,
   showAlert,
   getClickedChildWithClass,
+  updateItem,
 };
