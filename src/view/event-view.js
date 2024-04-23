@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeEventDate, humanizeEventDateHours, eventDatesDiff } from '../utils/event.js';
+import { humanizeEventDateDay, humanizeEventDateHours, eventDatesDiff } from '../utils/event.js';
 
 
 function createOffresTemplate(offersIdList, offers) {
@@ -8,6 +8,7 @@ function createOffresTemplate(offersIdList, offers) {
   if (offers.length === 0) {
     return '';
   }
+
   return (
     `<ul class="event__selected-offers">
       ${filteredOffers.map((offer) => `
@@ -34,7 +35,7 @@ function createEventPointTemplate(event, offers) {
     type,
   } = event;
 
-  const dateFromDay = dateFrom !== null ? humanizeEventDate(dateFrom) : '';
+  const dateFromDay = dateFrom !== null ? humanizeEventDateDay(dateFrom) : '';
 
   const dateFromExac = dateFrom !== null ? humanizeEventDateHours(dateFrom) : '';
   const dateToExac = dateTo !== null ? humanizeEventDateHours(dateTo) : '';

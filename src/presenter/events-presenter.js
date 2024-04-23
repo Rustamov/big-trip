@@ -125,8 +125,6 @@ export default class EventsPresenter {
     this.#renderEventsList();
   }
 
-
-
   #handleModeChange = () => {
     this.#eventPresenters.forEach((presenter) => presenter.resetView());
   };

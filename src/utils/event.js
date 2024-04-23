@@ -2,11 +2,15 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 dayjs.extend(duration);
 
-const DATE_FORMAT = 'MMM D';
+const DATE_FORMAT = 'DD/MM/YY HH:mm';
+const DATE_FORMAT_DAY = 'MMM D';
 const DATE_FORMAT_HOURS = 'hh:mm';
 
-function humanizeEventDate(date) {
+function formatEventDate(date) {
   return date ? dayjs(date).format(DATE_FORMAT) : '';
+}
+function humanizeEventDateDay(date) {
+  return date ? dayjs(date).format(DATE_FORMAT_DAY) : '';
 }
 
 function humanizeEventDateHours(date) {
@@ -83,7 +87,8 @@ function sortEventsByPrice(eventA, eventB) {
 
 
 export {
-  humanizeEventDate,
+  formatEventDate,
+  humanizeEventDateDay,
   humanizeEventDateHours,
   eventDatesDiff,
   sortEventsByDay,

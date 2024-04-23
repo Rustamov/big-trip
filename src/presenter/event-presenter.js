@@ -44,6 +44,7 @@ export default class EventPresenter {
       event: this.#event,
       offers: this.#offers,
       onFormSubmit: this.#handleFormSubmit,
+      onCloseEditClick: this.#handleCloseEditClick,
     });
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
@@ -91,8 +92,12 @@ export default class EventPresenter {
     this.#replaceEventToForm();
   };
 
+  #handleCloseEditClick = () => {
+    this.#replaceFormToEvent();
+  };
+
   #handleFormSubmit = (event) => {
-    this.#handleDataChange(event);
+    this.#handleDataChange(event); // TODO
     this.#replaceFormToEvent();
   };
 
