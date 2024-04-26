@@ -97,11 +97,13 @@ export default class EventPresenter {
   };
 
   #handleCloseEditClick = () => {
+    this.#eventEditComponent.reset(this.#event);
     this.#replaceFormToEvent();
   };
 
   #handleFormSubmit = (event) => {
     this.#handleDataChange(event); // TODO
+    this.#eventEditComponent.reset(this.#event);
     this.#replaceFormToEvent();
   };
 
@@ -116,6 +118,8 @@ export default class EventPresenter {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       this.#replaceFormToEvent();
+      this.#eventEditComponent.reset(this.#event);
+
       document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
   };
