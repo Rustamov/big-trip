@@ -17,7 +17,8 @@ export default class EventPresenter {
   #eventEditComponent = null;
 
   #event = null;
-  #offers = null;
+  #offersModel = null;
+  #destinationsModel = null;
   #mode = Mode.DEFAULT;
 
   constructor({ eventsListContainer, onDataChange, onModeChange }) {
@@ -26,23 +27,26 @@ export default class EventPresenter {
     this.#handleModeChange = onModeChange;
   }
 
-  init(event, offers) {
+  init(event, offersModel, destinationsModel) {
     this.#event = event;
-    this.#offers = offers;
+    this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
 
     const prevEventComponent = this.#eventComponent;
     const prevEventEditComponent = this.#eventEditComponent;
 
     this.#eventComponent = new EventView({
-      event,
-      offers,
+      event: this.#event,
+      offersModel: this.#offersModel,
+      destinationsModel: this.#destinationsModel,
       onEditClick: this.#handleEditClick,
       onFavoriteClick: this.#handleFavoriteClick,
     });
 
     this.#eventEditComponent = new EventEditView({
       event: this.#event,
-      offers: this.#offers,
+      offersModel: this.#offersModel,
+      destinationsModel: this.#destinationsModel,
       onFormSubmit: this.#handleFormSubmit,
       onCloseEditClick: this.#handleCloseEditClick,
     });
@@ -104,7 +108,7 @@ export default class EventPresenter {
   #handleFavoriteClick = () => {
     this.#handleDataChange(
       {...this.#event, isFavorite: !this.#event.isFavorite},
-      this.#offers
+      this.#offersModel
     );
   };
 

@@ -2,12 +2,11 @@ import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeEventDateDay, humanizeEventDateHours, eventDatesDiff } from '../utils/event.js';
 
 
-function createOffresTemplate(offersIdList, offers) {
-  const filteredOffers = offers.filter((offer) => offersIdList.includes(offer.id));
-
-  if (offers.length === 0) {
+function createOffresTemplate(offersIdList, typeOffers) {
+  if (offersIdList.length === 0) {
     return '';
   }
+  const filteredOffers = typeOffers.filter((offer) => offersIdList.includes(offer.id));
 
   return (
     `<ul class="event__selected-offers">
@@ -23,7 +22,7 @@ function createOffresTemplate(offersIdList, offers) {
   );
 }
 
-function createEventPointTemplate(event, offers) {
+function createEventPointTemplate(event, typeOffers) {
   const {
     basePrice,
     dateFrom = null,
@@ -48,8 +47,7 @@ function createEventPointTemplate(event, offers) {
     ? eventDatesDiff(dateFrom, dateTo)
     : '';
 
-
-  const offresTemplate = createOffresTemplate(offersIdList, offers);
+  const offresTemplate = createOffresTemplate(offersIdList, typeOffers);
 
   return (
     `< li class="trip-events__item" >
@@ -88,15 +86,15 @@ function createEventPointTemplate(event, offers) {
 
 export default class EventView extends AbstractView {
   #event = {};
-  #offers = [];
+  #offersModel = [];
 
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
-  constructor({ event, offers, onEditClick, onFavoriteClick }) {
+  constructor({ event, offersModel, onEditClick, onFavoriteClick }) {
     super();
     this.#event = event;
-    this.#offers = offers;
+    this.#offersModel = offersModel;
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
 
@@ -109,7 +107,10 @@ export default class EventView extends AbstractView {
   }
 
   get template() {
-    return createEventPointTemplate(this.#event, this.#offers);
+    return createEventPointTemplate(
+      this.#event,
+      this.#offersModel.getOffersByType(this.#event.type)
+    );
   }
 
   #onEditClick = (evt) => {

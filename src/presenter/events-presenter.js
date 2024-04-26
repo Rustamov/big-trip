@@ -21,6 +21,7 @@ export default class EventsPresenter {
   #eventsContainer = null;
   #eventsModel = null;
   #offersModel = null;
+  #destinationsModel = null;
 
   #sortComponent = null;
   #eventsListComponent = new EventsListView();
@@ -28,19 +29,20 @@ export default class EventsPresenter {
   #events = [];
   #sourcedEvents = [];
   #eventPresenters = new Map();
-  #offers = [];
+  // #offers = [];
   #currentSortType = SortType.DAY;
 
 
-  constructor({ eventsContainer, eventsModel, offersModel }) {
+  constructor({ eventsContainer, eventsModel, offersModel, destinationsModel }) {
     this.#eventsContainer = eventsContainer;
     this.#eventsModel = eventsModel;
     this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
   }
 
   init() {
     this.#events = [...this.#eventsModel.events];
-    this.#offers = [...this.#offersModel.offers];
+    // this.#offers = [...this.#offersModel.offers];
 
     this.#sourcedEvents = [...this.#eventsModel.events];
 
@@ -91,14 +93,14 @@ export default class EventsPresenter {
     render(this.#sortComponent, this.#eventsContainer);
   }
 
-  #renderEvent = (event, offers) => {
+  #renderEvent = (event, offersModel, destinationsModel) => {
     const eventPresenter = new EventPresenter({
       eventsListContainer: this.#eventsListComponent.element,
       onDataChange: this.#handleEventChange,
       onModeChange: this.#handleModeChange
     });
 
-    eventPresenter.init(event, offers);
+    eventPresenter.init(event, offersModel, destinationsModel);
 
     this.#eventPresenters.set(event.id, eventPresenter);
   };
@@ -107,11 +109,11 @@ export default class EventsPresenter {
     render(this.#eventsListComponent, this.#eventsContainer);
 
     for (let i = 0; i < this.#events.length; i++) {
-      const eventOffers = this.#offers
-        .find((offer) => offer.type === this.#events[i].type)
-        .offers;
+      // const eventOffers = this.#offers
+      //   .find((offer) => offer.type === this.#events[i].type)
+      //   .offers;
 
-      this.#renderEvent(this.#events[i], eventOffers);
+      this.#renderEvent(this.#events[i], this.#offersModel, this.#destinationsModel);
     }
   }
 
@@ -129,10 +131,10 @@ export default class EventsPresenter {
     this.#eventPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #handleEventChange = (updatedEvent, offers) => {
+  #handleEventChange = (updatedEvent, offersModel) => {
     this.#events = updateItem(this.#events, updatedEvent);
     this.#sourcedEvents = updateItem(this.#sourcedEvents, updatedEvent);
-    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent, offers);
+    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent, offersModel);
   };
 
 }
