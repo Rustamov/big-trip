@@ -110,7 +110,8 @@ export default class EventPresenter {
   #handleFavoriteClick = () => {
     this.#handleDataChange(
       {...this.#event, isFavorite: !this.#event.isFavorite},
-      this.#offersModel
+      this.#offersModel,
+      this.#destinationsModel,
     );
   };
 

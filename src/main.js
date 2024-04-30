@@ -31,7 +31,7 @@ getData(
       offersModel,
       destinationsModel
     });
-
+    console.log(events[0]);
     eventsPresenter.init();
   },
   (error) => {

@@ -131,10 +131,10 @@ export default class EventsPresenter {
     this.#eventPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #handleEventChange = (updatedEvent, offersModel) => {
+  #handleEventChange = (updatedEvent, offersModel, destinationsModel) => {
     this.#events = updateItem(this.#events, updatedEvent);
     this.#sourcedEvents = updateItem(this.#sourcedEvents, updatedEvent);
-    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent, offersModel);
+    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent, offersModel, destinationsModel);
   };
 
 }
