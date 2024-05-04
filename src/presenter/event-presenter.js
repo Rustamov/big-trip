@@ -2,6 +2,7 @@ import {render, replace, remove} from '../framework/render.js';
 
 import EventView from '../view/event-view.js';
 import EventEditView from '../view/event-edit-view.js';
+import {UserAction, UpdateType} from '../const.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -21,16 +22,17 @@ export default class EventPresenter {
   #destinationsModel = null;
   #mode = Mode.DEFAULT;
 
-  constructor({ eventsListContainer, onDataChange, onModeChange }) {
+  constructor({ eventsListContainer, onDataChange, onModeChange, offersModel, destinationsModel }) {
     this.#eventsListContainer = eventsListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
-  }
 
-  init(event, offersModel, destinationsModel) {
-    this.#event = event;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
+  }
+
+  init(event) {
+    this.#event = event;
 
     const prevEventComponent = this.#eventComponent;
     const prevEventEditComponent = this.#eventEditComponent;
@@ -102,16 +104,20 @@ export default class EventPresenter {
   };
 
   #handleFormSubmit = (event) => {
-    this.#handleDataChange(event); // TODO
+    this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      UpdateType.MINOR,
+      event
+    );
     this.#eventEditComponent.reset(this.#event);
     this.#replaceFormToEvent();
   };
 
   #handleFavoriteClick = () => {
     this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      UpdateType.PATCH,
       {...this.#event, isFavorite: !this.#event.isFavorite},
-      this.#offersModel,
-      this.#destinationsModel,
     );
   };
 
