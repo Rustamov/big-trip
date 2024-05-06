@@ -119,6 +119,10 @@ function sortEventsByPrice(eventA, eventB) {
 
 // }
 
+function isDatesEqual(dateA, dateB) {
+  return (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+}
+
 
 export {
   formatEventDate,
@@ -130,4 +134,5 @@ export {
   sortEventsByTime,
   sortEventsByPrice,
   getNoEventsText,
+  isDatesEqual,
 };

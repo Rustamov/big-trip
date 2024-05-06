@@ -1,8 +1,9 @@
-import {render, replace, remove} from '../framework/render.js';
+import { render, replace, remove } from '../framework/render.js';
 
 import EventView from '../view/event-view.js';
 import EventEditView from '../view/event-edit-view.js';
-import {UserAction, UpdateType} from '../const.js';
+import { UserAction, UpdateType } from '../const.js';
+import { isDatesEqual } from '../utils/event.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -51,6 +52,7 @@ export default class EventPresenter {
       destinationsModel: this.#destinationsModel,
       onFormSubmit: this.#handleFormSubmit,
       onCloseEditClick: this.#handleCloseEditClick,
+      onDeleteEventClick: this.#handleDeleteEventClick,
     });
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
@@ -103,13 +105,26 @@ export default class EventPresenter {
     this.#replaceFormToEvent();
   };
 
-  #handleFormSubmit = (event) => {
+  #handleDeleteEventClick = () => {
+    this.#handleDataChange(
+      UserAction.DELETE_EVENT,
+      UpdateType.MINOR,
+      this.#event,
+    );
+  };
+
+  #handleFormSubmit = (update) => {
+    const isMinorUpdate =
+      !isDatesEqual(this.#event.dateFrom, update.dateFrom) ||
+      !isDatesEqual(this.#event.dateTo, update.dateTo) ||
+      this.#event.basePrice !== update.basePrice
+      ;
+
     this.#handleDataChange(
       UserAction.UPDATE_EVENT,
-      UpdateType.MINOR,
-      event
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update
     );
-    this.#eventEditComponent.reset(this.#event);
     this.#replaceFormToEvent();
   };
 
@@ -117,7 +132,7 @@ export default class EventPresenter {
     this.#handleDataChange(
       UserAction.UPDATE_EVENT,
       UpdateType.PATCH,
-      {...this.#event, isFavorite: !this.#event.isFavorite},
+      { ...this.#event, isFavorite: !this.#event.isFavorite },
     );
   };
 

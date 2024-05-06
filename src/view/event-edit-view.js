@@ -23,6 +23,7 @@ function createOffresTemplate(offersIdList = [], typeOffers = []) {
             class="event__offer-checkbox
             visually-hidden"
             id="event-offer-${offer.id}"
+            data-offer-id="${offer.id}"
             type="checkbox"
             name="event-offer-luggage"
             ${offersIdList.includes(offer.id) ? 'checked' : ''}
@@ -161,12 +162,20 @@ export default class EventEditView extends AbstractStatefulView {
 
   #handleFormSubmit = null;
   #handleCloseEditClick = null;
+  #handleDeleteEventClick = null;
 
   #datepickerFrom = null;
   #datepickerTo = null;
 
 
-  constructor({ event, offersModel, destinationsModel, onFormSubmit, onCloseEditClick }) {
+  constructor({
+    event,
+    offersModel,
+    destinationsModel,
+    onFormSubmit,
+    onCloseEditClick,
+    onDeleteEventClick,
+  }) {
     super();
 
     this.#event = event;
@@ -175,6 +184,7 @@ export default class EventEditView extends AbstractStatefulView {
     this.#destinationsModel = destinationsModel;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleCloseEditClick = onCloseEditClick;
+    this.#handleDeleteEventClick = onDeleteEventClick;
 
     this._restoreHandlers();
   }
@@ -193,13 +203,15 @@ export default class EventEditView extends AbstractStatefulView {
   }
 
   get template() {
-    // console.log(this._state.type);
     return createEventEditTemplate(this._state, this.#offersModel, this.#destinationsModel);
   }
 
   _restoreHandlers() {
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#onCloseEditClick);
+
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#onDeleteEventClick);
 
     this.element.querySelector('form.event')
       .addEventListener('submit', this.#onFormSubmit);
@@ -210,10 +222,13 @@ export default class EventEditView extends AbstractStatefulView {
     this.element.querySelector('.event__type-group')
       .addEventListener('change', this.#onTypeChange);
 
+    this.element.querySelector('.event__details')
+      .addEventListener('change', this.#onOffersChange);
+
     this.element.querySelector('input[name=event-destination]')
       .addEventListener('change', this.#onDestinationChange);
 
-    this.#setDatepicker();
+    this.#setDatepickers();
   }
 
   reset(event) {
@@ -222,7 +237,7 @@ export default class EventEditView extends AbstractStatefulView {
 
   #onFormSubmit = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit();
+    this.#handleFormSubmit(this._state);
   };
 
   #onCloseEditClick = (evt) => {
@@ -230,6 +245,20 @@ export default class EventEditView extends AbstractStatefulView {
     this.#handleCloseEditClick();
   };
 
+  #onDeleteEventClick = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteEventClick();
+  };
+
+
+  #onOffersChange = () => {
+    const offersInputs = Array.from(document.querySelectorAll('.event__offer-checkbox:checked'));
+    const offersIdList = offersInputs.map((input) => +input.dataset.offerId);
+
+    this._setState({
+      offers: offersIdList,
+    });
+  };
 
   #onPriceInput = (evt) => {
     evt.preventDefault();
@@ -275,7 +304,7 @@ export default class EventEditView extends AbstractStatefulView {
     });
   };
 
-  #setDatepicker() {
+  #setDatepickers() {
     this.#datepickerFrom = flatpickr(
       this.element.querySelector('#event-start-time-1'),
       {

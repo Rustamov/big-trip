@@ -100,9 +100,13 @@ export default class RoutePresenter {
         this.#eventPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
+        this.#clearRoute();
+        this.#renderRoute();
         // - обновить список (например, когда задача ушла в архив)
         break;
       case UpdateType.MAJOR:
+        this.#clearRoute();
+        this.#renderRoute();
         // - обновить всю доску (например, при переключении фильтра)
         break;
     }
