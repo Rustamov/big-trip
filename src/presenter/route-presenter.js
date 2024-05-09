@@ -10,6 +10,7 @@ import { filterEventByDeadline } from '../utils/filter.js';
 import SortView from '../view/sort-view.js';
 import EventsListView from '../view/events-list-view.js';
 import NoEventsView from '../view/no-events-view.js';
+import LoadingView from '../view/loading-view.js';
 
 import EventPresenter from './event-presenter.js';
 import NewEventPresenter from './new-event-presenter.js';
@@ -26,11 +27,13 @@ export default class RoutePresenter {
   #sortComponent = null;
   #eventsListComponent = new EventsListView();
   #noEventsComponent = null;
+  #loadingComponent = new LoadingView();
 
   #newEventPresenter = null;
   #eventPresenters = new Map();
 
   #currentSortType = SortType.DAY;
+  #isLoading = true;
 
 
   constructor({ eventsContainer, eventsModel, offersModel, destinationsModel, filterModel, onNewEventDestroy }) {
@@ -126,6 +129,11 @@ export default class RoutePresenter {
         this.#renderRoute();
         // - обновить всю доску (например, при переключении фильтра)
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderRoute();
+        break;
     }
 
     // В зависимости от типа изменений решаем, что делать:
@@ -154,6 +162,10 @@ export default class RoutePresenter {
     this.#clearRoute();
     this.#renderRoute();
   };
+
+  #renderLoading() {
+    render(this.#loadingComponent, this.#eventsContainer);
+  }
 
   #renderSort() {
     this.#sortComponent = new SortView({
@@ -198,10 +210,16 @@ export default class RoutePresenter {
     this.#eventPresenters.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
     remove(this.#noEventsComponent);
   }
 
   #renderRoute() {
+    // if (this.#isLoading) {
+    //   this.#renderLoading();
+    //   return;
+    // }
+
     const events = this.events;
 
     if (events.length === 0) {
