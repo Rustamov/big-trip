@@ -88,13 +88,20 @@ function createEventEditTemplate(event, offersModel, destinationsModel) {
   } = event;
 
   // console.log(event);
-
+  const isAddEventTemplate = event.id === undefined; // the is not id in BLANK_EVENT
   const dateFromFormated = dateFrom !== null ? formatEventDate(dateFrom) : '';
   const dateToFormated = dateTo !== null ? formatEventDate(dateTo) : '';
 
   const typeOffers = type !== null ? offersModel.getOffersByType(event.type) : null;
   const offresTemplate = createOffresTemplate(offersIdList, typeOffers);
   const destinationTemplate = createDedestinationTemplate(destination);
+
+  const closeButton = isAddEventTemplate
+    ? ''
+    : `<button class="event__rollup-btn" type="button">
+        <span class="visually-hidden">Open event</span>
+      </button>`;
+
 
   // const destinationsAll = destinationsModel.getDestinations;
 
@@ -160,9 +167,7 @@ function createEventEditTemplate(event, offersModel, destinationsModel) {
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Delete</button>
-        <button class="event__rollup-btn" type="button">
-          <span class="visually-hidden">Open event</span>
-        </button>
+        ${closeButton}
       </header>
       <section class="event__details">
 
@@ -230,8 +235,10 @@ export default class EventEditView extends AbstractStatefulView {
   }
 
   _restoreHandlers() {
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#onCloseEditClick);
+    if (this.element.querySelector('.event__rollup-btn') !== null) {
+      this.element.querySelector('.event__rollup-btn')
+        .addEventListener('click', this.#onCloseEditClick);
+    }
 
     this.element.querySelector('.event__reset-btn')
       .addEventListener('click', this.#onDeleteEventClick);
