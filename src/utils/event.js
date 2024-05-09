@@ -2,8 +2,6 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 dayjs.extend(duration);
 
-import { FilterType } from '../const.js';
-
 const DATE_FORMAT = 'DD/MM/YY HH:mm';
 const DATE_FORMAT_DAY = 'MMM D';
 const DATE_FORMAT_HOURS = 'hh:mm';
@@ -51,36 +49,8 @@ function getWeightForNullDate(dateA, dateB) {
   return null;
 }
 
-function filterEventByDeadline(event, deadline) {
-  const dateFrom = dayjs(event.dateFrom);
-  const dateTo = dayjs(event.dateTo);
-  const dateNow = dayjs();
 
-  switch (deadline) {
-    case FilterType.EVERYTHING.toLocaleLowerCase():
-      return true;
 
-    case FilterType.FUTURE.toLocaleLowerCase():
-      return dateFrom.diff(dateNow) >= 0;
-
-    case FilterType.PAST.toLocaleLowerCase():
-      return dateTo.diff(dateNow) <= 0;
-  }
-}
-
-function getNoEventsText(filterType) {
-  switch (filterType) {
-    case FilterType.EVERYTHING.toLocaleLowerCase():
-      return 'Click New Event to create your first point';
-
-    case FilterType.FUTURE.toLocaleLowerCase():
-      return 'There are no future events now';
-
-      case FilterType.PAST.toLocaleLowerCase():
-      return 'There are no past events now';
-  }
-
-};
 
 function sortEventsByDay(eventA, eventB) {
   const weight = getWeightForNullDate(eventA.dateFrom, eventB.dateFrom);
@@ -129,10 +99,8 @@ export {
   humanizeEventDateDay,
   humanizeEventDateHours,
   eventDatesDiff,
-  filterEventByDeadline,
   sortEventsByDay,
   sortEventsByTime,
   sortEventsByPrice,
-  getNoEventsText,
   isDatesEqual,
 };

@@ -139,8 +139,8 @@ export default class EventPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      this.#replaceFormToEvent();
       this.#eventEditComponent.reset(this.#event);
+      this.#replaceFormToEvent();
 
       document.removeEventListener('keydown', this.#escKeyDownHandler);
     }

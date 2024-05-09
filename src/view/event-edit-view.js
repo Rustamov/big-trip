@@ -5,9 +5,22 @@ import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
+const BLANK_EVENT = {
+  "type": "taxi",
+  "destination": null,
+  "offers": [],
+  "basePrice": 0,
+  "dateFrom": null,
+  "dateTo": null,
+  "isFavorite": true
+};
+
 const DATE_PICK_FORMAT = 'd/m/y H:i';
 
-function createOffresTemplate(offersIdList = [], typeOffers = []) {
+function createOffresTemplate(offersIdList, typeOffers) {
+  offersIdList = offersIdList ?? [];
+  typeOffers = typeOffers ?? [];
+
   if (typeOffers.length === 0) {
     return '';
   }
@@ -61,6 +74,7 @@ function createDedestinationTemplate(destination) {
 }
 
 function createEventEditTemplate(event, offersModel, destinationsModel) {
+  // console.log(event, offersModel, destinationsModel);
   const {
     basePrice,
     dateFrom = null,
@@ -77,7 +91,7 @@ function createEventEditTemplate(event, offersModel, destinationsModel) {
   const dateFromFormated = dateFrom !== null ? formatEventDate(dateFrom) : '';
   const dateToFormated = dateTo !== null ? formatEventDate(dateTo) : '';
 
-  const typeOffers = offersModel.getOffersByType(event.type)
+  const typeOffers = type !== null ? offersModel.getOffersByType(event.type) : null;
   const offresTemplate = createOffresTemplate(offersIdList, typeOffers);
   const destinationTemplate = createDedestinationTemplate(destination);
 
@@ -109,9 +123,17 @@ function createEventEditTemplate(event, offersModel, destinationsModel) {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${type}
+            ${type ? type : ''}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+          <input
+            class="event__input
+
+            event__input--destination"
+            id="event-destination-1"
+            type="text"
+            name="event-destination"
+            value="${destination ? destination.name : ''}" list="destination-list-1"
+          >
           <datalist id="destination-list-1">
             ${destinationsModel.destinations.map((destination) => `
               <option value="${destination.name}"></option>
@@ -169,7 +191,7 @@ export default class EventEditView extends AbstractStatefulView {
 
 
   constructor({
-    event,
+    event = BLANK_EVENT,
     offersModel,
     destinationsModel,
     onFormSubmit,
@@ -292,7 +314,7 @@ export default class EventEditView extends AbstractStatefulView {
 
   #dateFromChangeHandler = ([dateFrom]) => {
     this.updateElement({
-      dateFrom: dateFrom,
+      dateFrom,
     });
 
     this.#datepickerTo.open();
@@ -300,7 +322,7 @@ export default class EventEditView extends AbstractStatefulView {
 
   #dateToChangeHandler = ([dateTo]) => {
     this.updateElement({
-      dateTo: dateTo,
+      dateTo,
     });
   };
 

@@ -6,6 +6,8 @@ import FilterModel from './model/filter-model.js';
 import DestinationsModel from './model/destinations-model.js';
 
 import InfoView from './view/info-view.js';
+import NewEventButtonView from './view/new-event-button-view.js';
+
 
 import { render } from './framework/render.js';
 import RoutePresenter from './presenter/route-presenter.js';
@@ -27,6 +29,10 @@ const filterPresenter = new FilterPresenter({
 });
 filterPresenter.init();
 
+
+
+
+
 getData(
   (events, offers, destinations) => {
     const eventsModel = new EventsModel(events);
@@ -38,11 +44,28 @@ getData(
       offersModel,
       destinationsModel,
       filterModel,
+      onNewEventDestroy: handleNewEventFormClose,
+
     });
     routePresenter.init();
     console.log(routePresenter.events[0]);
     console.log(routePresenter.destinations[0]);
     console.log(routePresenter.offers[0]);
+
+    const newEventButtonComponent = new NewEventButtonView({
+      onClick: handleNewEventButtonClick
+    });
+
+    function handleNewEventFormClose() {
+      newEventButtonComponent.element.disabled = false;
+    }
+
+    function handleNewEventButtonClick() {
+      routePresenter.createEvent();
+      newEventButtonComponent.element.disabled = true;
+    }
+
+    render(newEventButtonComponent, siteHeaderInfoContainerNode);
 
   },
   (error) => {

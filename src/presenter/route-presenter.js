@@ -1,17 +1,18 @@
 import { render, remove } from '../framework/render.js';
-import { SortType, UpdateType, UserAction } from '../const.js';
+import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
 import {
-  filterEventByDeadline,
   sortEventsByDay,
   sortEventsByTime,
   sortEventsByPrice,
 } from '../utils/event.js';
+import { filterEventByDeadline } from '../utils/filter.js';
 
 import SortView from '../view/sort-view.js';
 import EventsListView from '../view/events-list-view.js';
 import NoEventsView from '../view/no-events-view.js';
 
 import EventPresenter from './event-presenter.js';
+import NewEventPresenter from './new-event-presenter.js';
 
 
 
@@ -26,16 +27,26 @@ export default class RoutePresenter {
   #eventsListComponent = new EventsListView();
   #noEventsComponent = null;
 
+  #newEventPresenter = null;
   #eventPresenters = new Map();
+
   #currentSortType = SortType.DAY;
 
 
-  constructor({ eventsContainer, eventsModel, offersModel, destinationsModel, filterModel }) {
+  constructor({ eventsContainer, eventsModel, offersModel, destinationsModel, filterModel, onNewEventDestroy }) {
     this.#eventsContainer = eventsContainer;
     this.#eventsModel = eventsModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
     this.#filterModel = filterModel;
+
+    this.#newEventPresenter = new NewEventPresenter({
+      eventsListContainer: this.#eventsListComponent.element,
+      onDataChange: this.#handleViewAction,
+      onDestroy: onNewEventDestroy,
+      offersModel,
+      destinationsModel,
+    });
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelFilter);
@@ -48,6 +59,12 @@ export default class RoutePresenter {
     // this.#sourcedEvents = [...this.#eventsModel.events];
 
     this.#renderRoute();
+  }
+
+  createEvent() {
+    this.#currentSortType = SortType.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newEventPresenter.init();
   }
 
   get events() {
@@ -176,6 +193,7 @@ export default class RoutePresenter {
   }
 
   #clearRoute() {
+    this.#newEventPresenter.destroy();
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
 
@@ -198,6 +216,7 @@ export default class RoutePresenter {
   }
 
   #handleModeChange = () => {
+    this.#newEventPresenter.destroy();
     this.#eventPresenters.forEach((presenter) => presenter.resetView());
   };
 

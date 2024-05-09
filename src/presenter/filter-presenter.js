@@ -1,4 +1,4 @@
-import { render } from '../framework/render.js';
+import { render, replace, remove } from '../framework/render.js';
 
 import FilterView from '../view/filter-view.js';
 
@@ -12,41 +12,36 @@ export default class FilterPresenter {
     this.#filterContainer = filterContainer;
     this.#filterModel = filterModel;
 
-
-    // this.#eventsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleFilterModelEvent);
   }
 
   init() {
-    this.#renderFilter();
-  }
+    const filters = this.filters;
+    const prevFilterComponent = this.#filterComponent;
 
-  get filter() {
-    // switch (this.#currentSortType) {
-    //   case SortType.DAY:
-    //     return [...this.#eventsModel.events].sort(sortEventsByDay);
-
-    //   case SortType.TIME:
-    //     return [...this.#eventsModel.events].sort(sortEventsByTime);
-
-    //   case SortType.PRICE:
-    //     return [...this.#eventsModel.events].sort(sortEventsByPrice);
-    // }
-
-    return this.#filterModel.filter;
-  }
-
-  #renderFilter = () => {
     this.#filterComponent = new FilterView({
       currentFilter: this.filter,
       onFilterTypeChange: this.#handleFilterTypeChange
     });
 
-    render(this.#filterComponent, this.#filterContainer);
+    if (prevFilterComponent === null) {
+      render(this.#filterComponent, this.#filterContainer);
+      return;
+    }
 
+    replace(this.#filterComponent, prevFilterComponent);
+    remove(prevFilterComponent);
   }
 
+  get filter() {
+    return this.#filterModel.filter;
+  }
+
+  #handleFilterModelEvent = () => {
+    this.init();
+  };
+
   #handleFilterTypeChange = (filterType) => {
-    console.log(filterType);
     if (this.#filterModel.filter === filterType) {
       return;
     }
